@@ -13,10 +13,10 @@ This final project is one of the requirements for graduating from Job Connector 
 
 ### 1. Data Extraction
 At this stage the process that I did is uploading csv data that can be obtained from kaggle.com. There are 4 data which are as follows:<br>
-1.stores.csv: a file containing anonymous information on the 45 Walmart stores and their types and sizes.<br>
-2.train.csv: File that informs training data from 2010-02-05 to 2012-11-01. The columns include: Store, Dept, Date, Weekly Sales, IsHoliday.<br>
-3. test.csv: File in the same format as Train.csv, but without the Weekly_Sales column, which must be filled in by the results of the prediction models that have been made.<br>
-4. features.csv: Files that contain additional information related to stores, departments, other regional activities based on the input time.<br>
+1.*stores.csv*  : a file containing anonymous information on the 45 Walmart stores and their types and sizes.<br>
+2.*train.csv*   : File that informs training data from 2010-02-05 to 2012-11-01. The columns include: Store, Dept, Date, Weekly Sales, IsHoliday.<br>
+3.*test.csv*    : File in the same format as Train.csv, but without the Weekly_Sales column, which must be filled in by the results of the prediction models that have been made.<br>
+4.*features.csv*: Files that contain additional information related to stores, departments, other regional activities based on the input time.<br>
 
 ### 2. Data Preprocessing
 At this stage, 3 steps are taken in preparing the data before it is used in the model:
