@@ -28,7 +28,8 @@ At this stage, 3 steps are taken in preparing the data before it is used in the 
 At this stage, a visual approach (heatplot and scatter plot) is carried out to see if there is a close relationship between each feature / column in the dataset to the Weekly_Sales feature / column.
 
 <p align="center"> <img src="https://user-images.githubusercontent.com/69567029/99923120-d47fee00-2d66-11eb-9bf5-7857b3115047.PNG" alt="" width="700" height="500"> </p><br>
-<p align="center"> <img src="https://user-images.githubusercontent.com/69567029/99923120-d47fee00-2d66-11eb-9bf5-7857b3115047.PNG" alt="" width="700" height="500"> </p>
+<h5> Correlation Weight </h5>
+<p align="left"> <img src="https://user-images.githubusercontent.com/69567029/99923331-cbdbe780-2d67-11eb-8f4e-879f2630a2ef.PNG" alt="" width="400" height="300"> </p>
 
 ### 4. Feature Engineering
 At this stage, data features are selected which later will be used as data sources for the modeling process. Because the model used is ARIMA which can only process data in the form of univariate time series, the Weekly_Sales feature is choosen with Date as the index. But before using the Weekly_Sales feature, there are steps that are taken, including:<br>
