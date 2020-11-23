@@ -27,45 +27,14 @@ At this stage, 3 steps are taken in preparing the data before it is used in the 
 ### 3. Exploratory Data Analysis (EDA)
 At this stage, a visual approach (heatplot and scatter plot) is carried out to see if there is a close relationship between each feature / column in the dataset to the Weekly_Sales feature / column.
 
-<p align="center"> <img src="https://user-images.githubusercontent.com/69567029/99923120-d47fee00-2d66-11eb-9bf5-7857b3115047.PNG" alt="" width="700" height="500"> </p><br>
+<p align="center"> <img src="https://user-images.githubusercontent.com/69567029/99923120-d47fee00-2d66-11eb-9bf5-7857b3115047.PNG" alt="" width="1000" height="800"> </p><br>
 <h5> Correlation Weight </h5>
-<p align="left"> <img src="https://user-images.githubusercontent.com/69567029/99923331-cbdbe780-2d67-11eb-8f4e-879f2630a2ef.PNG" alt="" width="400" height="300"> </p>
+<p align="center"> <img src="https://user-images.githubusercontent.com/69567029/99923331-cbdbe780-2d67-11eb-8f4e-879f2630a2ef.PNG" alt="" width="400" height="300"> </p>
 
 ### 4. Feature Engineering
 At this stage, data features are selected which later will be used as data sources for the modeling process. Because the model used is ARIMA which can only process data in the form of univariate time series, the Weekly_Sales feature is choosen with Date as the index. But before using the Weekly_Sales feature, there are steps that are taken, including:<br>
 1. Group Weekly_Sales data into the same time, where the previous Weekly_Sales data is still divided by department and store.<br>
 2. Sampling data Weekly_Sales back into weekly form.<br>
-
-###### *paramaters*
-
-```
-param_model_2 = {
-    'max_depth' : [-1,7,12,14,17],
-    'num_leaves' : [31,70,120],
-    'min_data_in_leaf' : [60,100,120],
-    'learning_rate' : [0.001,0.01,0.05],
-    'num_iterations' :[200,400,600]
-}
-```
-
-###### *evaluation*
-
-```
-===== CLASSIFICATION REPORT SCORING FROM F1 SCORE =====
-              precision    recall  f1-score   support
-
-           0       0.84      0.81      0.83     14561
-           1       0.96      0.97      0.96     71177
-
-    accuracy                           0.94     85738
-   macro avg       0.90      0.89      0.90     85738
-weighted avg       0.94      0.94      0.94     85738
-
-tn :  11838  fp :  2723  fn :  2276  tp :  68901
-
-======== BEST PARAMETERS SCORING FROM F1 SCORE ========
-{'learning_rate': 0.05, 'max_depth': 12, 'min_data_in_leaf': 60, 'num_iterations': 600, 'num_leaves': 120}
-```
 
 ### 5. Modelling
 The modeling method I use in this project is ARIMA or Auto Regression Integrated Moving Average.
@@ -75,13 +44,87 @@ Then the final step is to test the model to forecast Weekly_Sales for the next w
 
 ### 6. The Evaluation
 From the results that have been modeling it can be concluded that the best data used is original data because it is already stationary (based on statistical tests) and the best ARIMA model is by tuning:<br>
-p = 2, d = 0, q = 0.<br>
-And the results of the evaluation of the metrics are:<br>
-MAPE value: 3%.<br>
-Correlation value: -6%<br>
-MinMax Value: 3%.<br>
+###### *best paramaters*
 
-The model can also produce sales target predictions for the following week, based on trends in training data.
+```
+Performing stepwise search to minimize aic
+ ARIMA(1,0,1)(0,0,0)[0]             : AIC=4853.809, Time=0.10 sec
+ ARIMA(0,0,0)(0,0,0)[0]             : AIC=5462.768, Time=0.01 sec
+ ARIMA(1,0,0)(0,0,0)[0]             : AIC=inf, Time=0.01 sec
+ ARIMA(0,0,1)(0,0,0)[0]             : AIC=5370.491, Time=0.02 sec
+ ARIMA(2,0,1)(0,0,0)[0]             : AIC=inf, Time=0.31 sec
+ ARIMA(1,0,2)(0,0,0)[0]             : AIC=inf, Time=0.24 sec
+ ARIMA(0,0,2)(0,0,0)[0]             : AIC=5343.635, Time=0.07 sec
+ ARIMA(2,0,0)(0,0,0)[0]             : AIC=inf, Time=0.07 sec
+ ARIMA(2,0,2)(0,0,0)[0]             : AIC=4855.994, Time=0.23 sec
+ ARIMA(1,0,1)(0,0,0)[0] intercept   : AIC=4830.601, Time=0.05 sec
+ ARIMA(0,0,1)(0,0,0)[0] intercept   : AIC=4834.617, Time=0.04 sec
+ ARIMA(1,0,0)(0,0,0)[0] intercept   : AIC=4829.490, Time=0.09 sec
+ ARIMA(0,0,0)(0,0,0)[0] intercept   : AIC=4844.691, Time=0.01 sec
+ ARIMA(2,0,0)(0,0,0)[0] intercept   : AIC=4829.420, Time=0.06 sec
+ ARIMA(3,0,0)(0,0,0)[0] intercept   : AIC=4831.228, Time=0.06 sec
+ ARIMA(2,0,1)(0,0,0)[0] intercept   : AIC=4831.381, Time=0.14 sec
+ ARIMA(3,0,1)(0,0,0)[0] intercept   : AIC=4833.224, Time=0.24 sec
+
+Best model:  ARIMA(2,0,0)(0,0,0)[0] intercept
+Total fit time: 1.799 seconds
+```
+
+###### *evaluation*
+
+```
+===== EVALUATION WITH 3 METRICS =====
+ MAPE       : 0.03238679345769841
+ Correlation: -0.0628146107235571
+ MinMax     : 0.03125289556011501
+```
+
+The model can also produce sales target predictions for the following week, based on trends in training data.<br>
+
+###### *code*
+```
+# invert differenced value
+def inverse_difference(history, yhat, interval=1):
+    return yhat + history[-interval]
+
+# seasonal difference
+weeks_in_year = 52
+
+# fit model
+model = ARIMA(y_deseason.diff().dropna(), order=(2,0,0))#ARIMA with best models
+model_final = model.fit()
+
+# multi-step out-of-sample forecast
+forecast = model_final.forecast(steps=9)[0]
+
+# invert the differenced forecast to something usable
+history = [x for x in y]
+fc = []
+wtarget = []
+data_wtarget = {'week': wtarget,'prediksi_sales_target':fc}
+week = 1
+for yhat in forecast:
+    inverted = inverse_difference(history, yhat, weeks_in_year)
+    print('Week %d: %f' % (week, inverted))
+    history.append(inverted)
+    fc.append(round(inverted))
+    wtarget.append(week)
+    week += 1
+```
+
+###### *result*
+```
+Week 1: 48655546.260857
+Week 2: 48474224.235925
+Week 3: 46438980.151784
+Week 4: 66593605.555464
+Week 5: 49390556.368871
+Week 6: 55561147.589723
+Week 7: 60085695.951972
+Week 8: 76998241.251917
+Week 9: 46042460.982537
+
+```
 
 ### 7. Improvement Point of this Project
 Even the model already can predict the Weekly Sales based on previously stored weekly sales data, The results provided by the model are still too broad, where the new model can only predict global weekly sales figures, not specific for each store. And as is generally known, the ARIMA model cannot be used to forecast data for a long period of time. Therefore, I personally realize that this model is not optimal. The project objectives and the selection of the algorithm model were not yet suitable. But from this project, I learned a lot about new things that I will use in the next forecasting project. thanks:). 
